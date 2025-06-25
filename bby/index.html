@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Repository - Upload</title>
+    <link rel="stylesheet" href="assets/css/upload.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="nebula"></div>
+    
+    <header class="header">
+        <nav>
+            <a href="galaxy.html" class="nav-link">View Galaxy</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="upload-section">
+            <h2 class="section-title">💖 Add to Our Universe 💖</h2>
+            <p class="section-subtitle">Upload your precious memories to create our cosmic love story</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <div class="upload-icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L13.09 8.26L19 7.27L14.18 12.09L20.45 15.54L13.81 16.89L14.91 23.15L12 18.54L9.09 23.15L10.19 16.89L3.55 15.54L9.82 12.09L5 7.27L10.91 8.26L12 2Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h3>💫 Drop your memories here or click to choose 💫</h3>
+                    <p>Each photo becomes a star in our galaxy of love</p>
+                    <input type="file" id="fileInput" multiple accept="image/*" hidden>
+                </div>
+                <div class="upload-progress" id="uploadProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">Uploading...</p>
+                </div>
+            </div>
+
+            <div class="file-grid" id="fileGrid">
+                <!-- Uploaded files will be displayed here -->
+            </div>
+        </section>
+
+        <section class="stats-section">
+            <div class="stat-card">
+                <h3 class="stat-number" id="totalFiles">0</h3>
+                <p class="stat-label">Cosmic Objects</p>
+            </div>
+            <div class="stat-card">
+                <h3 class="stat-number" id="totalSize">0 MB</h3>
+                <p class="stat-label">Galaxy Mass</p>
+            </div>
+            <div class="stat-card">
+                <h3 class="stat-number" id="lastUpload">Never</h3>
+                <p class="stat-label">Last Discovery</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="notification" id="notification">
+        <div class="notification-content">
+            <span class="notification-message"></span>
+            <button class="notification-close">&times;</button>
+        </div>
+    </div>
+
+    <script src="assets/js/upload.js"></script>
+</body>
+</html>

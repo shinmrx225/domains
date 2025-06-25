@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Galaxy Repository API Test</h1>
+    
+    <button onclick="testFilesAPI()">Test Files API</button>
+    <button onclick="clearCache()">Clear Browser Cache</button>
+    <button onclick="location.reload(true)">Hard Reload</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        async function testFilesAPI() {
+            const results = document.getElementById('results');
+            results.innerHTML += '<div class="result"><strong>Testing Files API...</strong></div>';
+            
+            try {
+                // Test without cache busting
+                const response1 = await fetch('api/files.php');
+                const data1 = await response1.json();
+                results.innerHTML += `<div class="result">
+                    <strong>API Response (no cache-bust):</strong><br>
+                    <pre>${JSON.stringify(data1, null, 2)}</pre>
+                </div>`;
+                
+                // Test with cache busting
+                const timestamp = new Date().getTime();
+                const response2 = await fetch(`api/files.php?t=${timestamp}`);
+                const data2 = await response2.json();
+                results.innerHTML += `<div class="result">
+                    <strong>API Response (with cache-bust):</strong><br>
+                    <pre>${JSON.stringify(data2, null, 2)}</pre>
+                </div>`;
+                
+            } catch (error) {
+                results.innerHTML += `<div class="result" style="color: red;">
+                    <strong>Error:</strong> ${error.message}
+                </div>`;
+            }
+        }
+        
+        function clearCache() {
+            if (typeof(Storage) !== "undefined") {
+                localStorage.clear();
+                sessionStorage.clear();
+                document.getElementById('results').innerHTML += '<div class="result">✓ Cleared localStorage and sessionStorage</div>';
+            }
+            
+            // Clear all cookies
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
+            document.getElementById('results').innerHTML += '<div class="result">✓ Cleared cookies</div>';
+        }
+        
+        // Auto-test on load
+        window.onload = function() {
+            testFilesAPI();
+        };
+    </script>
+</body>
+</html>

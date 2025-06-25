@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Repository - Cosmic Visualization</title>
+    <link rel="stylesheet" href="assets/css/galaxy.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="heart-loader">
+                <div class="heart">
+                    <div class="heart-piece"></div>
+                    <div class="heart-piece"></div>
+                </div>
+            </div>
+            <h2></h2>
+            <p id="loadingText">Preparing your surprise</p>
+        </div>
+    </div>
+
+    <div class="galaxy-ui">
+        <header class="header">
+            <h1 class="logo"></h1>
+            <nav class="nav-controls">
+                <a href="index.html" class="nav-link">Upload More</a>
+                <button id="shareBtn" class="nav-link share-btn">Share Galaxy</button>
+            </nav>
+        </header>
+    </div>
+
+    <canvas id="galaxyCanvas"></canvas>
+
+    <!-- Romantic Welcome Message -->
+    <div class="romantic-message" id="romanticMessage">
+        <div class="message-content">
+            <h3>✨ Welcome to Our Galaxy ✨</h3>
+            <p>Every memory orbits around our love...</p>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal" id="shareModal">
+        <div class="modal-content">
+            <h3>Share Your Galaxy</h3>
+            <p>Copy this link to share your cosmic collection:</p>
+            <div class="share-link-container">
+                <input type="text" id="shareLink" readonly>
+                <button id="copyLinkBtn">Copy</button>
+            </div>
+            <div class="share-options">
+                <button class="share-option" data-platform="twitter">Twitter</button>
+                <button class="share-option" data-platform="facebook">Facebook</button>
+                <button class="share-option" data-platform="email">Email</button>
+            </div>
+            <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+    </div>
+
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+    <script src="assets/js/galaxy-clean.js"></script>
+</body>
+</html>

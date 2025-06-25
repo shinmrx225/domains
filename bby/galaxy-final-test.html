@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Final Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f5f5; 
+        }
+        .test-section { 
+            background: white; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        .status { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 4px; 
+            font-weight: bold; 
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            margin: 5px; 
+        }
+        button:hover { background: #0056b3; }
+        .galaxy-link { 
+            display: inline-block; 
+            background: #28a745; 
+            color: white; 
+            text-decoration: none; 
+            padding: 15px 30px; 
+            border-radius: 8px; 
+            margin: 10px 0; 
+            font-size: 18px; 
+        }
+        .galaxy-link:hover { background: #1e7e34; }
+        #console { 
+            background: #343a40; 
+            color: #28a745; 
+            padding: 15px; 
+            border-radius: 4px; 
+            font-family: monospace; 
+            height: 300px; 
+            overflow-y: auto; 
+            white-space: pre-wrap; 
+        }
+    </style>
+</head>
+<body>
+    <h1>🌌 Galaxy Repository - Final System Test</h1>
+    
+    <div class="test-section">
+        <h2>📋 Test Results</h2>
+        <div id="libraryTest" class="status info">Testing libraries...</div>
+        <div id="apiTest" class="status info">Testing API...</div>
+        <div id="filesTest" class="status info">Testing files...</div>
+        <div id="galaxyTest" class="status info">Testing galaxy class...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🚀 Launch Galaxy</h2>
+        <p>If all tests pass, use these links to launch your galaxy:</p>
+        <a href="galaxy.html" class="galaxy-link" target="_blank">🌟 Launch Galaxy (Normal)</a>
+        <a href="galaxy.html?debug=true" class="galaxy-link" target="_blank">🔧 Launch Galaxy (Debug Mode)</a>
+    </div>
+    
+    <div class="test-section">
+        <h2>📁 File Management</h2>
+        <p>Upload and manage your cosmic memories:</p>
+        <a href="index.html" class="galaxy-link" target="_blank">📤 Upload Files</a>
+        <div id="filesList"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🖥️ Console Output</h2>
+        <button onclick="runTests()">🔄 Run All Tests</button>
+        <button onclick="clearConsole()">🗑️ Clear Console</button>
+        <div id="console"></div>
+    </div>
+
+    <script>
+        let consoleOutput = document.getElementById('console');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            consoleOutput.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearConsole() {
+            consoleOutput.textContent = '';
+        }
+        
+        function updateTest(testId, message, success) {
+            const element = document.getElementById(testId);
+            element.textContent = message;
+            element.className = 'status ' + (success ? 'success' : 'error');
+        }
+        
+        async function testLibraries() {
+            log('Testing JavaScript libraries...');
+            
+            // Test Three.js
+            if (typeof THREE !== 'undefined') {
+                log('✅ Three.js loaded (revision: ' + THREE.REVISION + ')', 'success');
+            } else {
+                log('❌ Three.js not found', 'error');
+                updateTest('libraryTest', '❌ Three.js failed to load', false);
+                return false;
+            }
+            
+            // Test TWEEN.js
+            if (typeof TWEEN !== 'undefined') {
+                log('✅ TWEEN.js loaded', 'success');
+            } else {
+                log('❌ TWEEN.js not found', 'error');
+                updateTest('libraryTest', '❌ TWEEN.js failed to load', false);
+                return false;
+            }
+            
+            updateTest('libraryTest', '✅ All libraries loaded successfully', true);
+            return true;
+        }
+        
+        async function testAPI() {
+            log('Testing API endpoints...');
+            
+            try {
+                // Test files endpoint
+                const response = await fetch('api/files.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    log('✅ API working - found ' + data.files.length + ' files', 'success');
+                    updateTest('apiTest', `✅ API working (${data.files.length} files)`, true);
+                    return data.files;
+                } else {
+                    log('⚠️ API returned error: ' + data.message, 'warning');
+                    updateTest('apiTest', '⚠️ API error: ' + data.message, false);
+                    return [];
+                }
+            } catch (error) {
+                log('❌ API test failed: ' + error.message, 'error');
+                updateTest('apiTest', '❌ API failed: ' + error.message, false);
+                return false;
+            }
+        }
+        
+        async function testFiles(files) {
+            log('Testing file accessibility...');
+            
+            if (!files || files.length === 0) {
+                log('⚠️ No files to test', 'warning');
+                updateTest('filesTest', '⚠️ No files uploaded yet', false);
+                return false;
+            }
+            
+            // Test first few files
+            let successCount = 0;
+            const testCount = Math.min(3, files.length);
+            
+            for (let i = 0; i < testCount; i++) {
+                const file = files[i];
+                try {
+                    const response = await fetch(file.path);
+                    if (response.ok) {
+                        successCount++;
+                        log(`✅ File accessible: ${file.name}`, 'success');
+                    } else {
+                        log(`❌ File not accessible: ${file.name}`, 'error');
+                    }
+                } catch (error) {
+                    log(`❌ Error accessing file ${file.name}: ${error.message}`, 'error');
+                }
+            }
+            
+            const allAccessible = successCount === testCount;
+            updateTest('filesTest', `${allAccessible ? '✅' : '⚠️'} ${successCount}/${testCount} files accessible`, allAccessible);
+            
+            // Update files list
+            const filesList = document.getElementById('filesList');
+            filesList.innerHTML = '<h4>📸 Uploaded Files:</h4>' + 
+                files.map(f => `<div>• ${f.name} (${f.size || 'Unknown size'})</div>`).join('');
+            
+            return allAccessible;
+        }
+        
+        function testGalaxyClass() {
+            log('Testing Galaxy visualization class...');
+            
+            if (typeof GalaxyVisualization !== 'undefined') {
+                log('✅ GalaxyVisualization class found', 'success');
+                updateTest('galaxyTest', '✅ Galaxy class ready', true);
+                return true;
+            } else {
+                log('❌ GalaxyVisualization class not found', 'error');
+                updateTest('galaxyTest', '❌ Galaxy class missing', false);
+                return false;
+            }
+        }
+        
+        async function runTests() {
+            clearConsole();
+            log('🚀 Starting comprehensive galaxy test suite...');
+            
+            // Test all components
+            const librariesOK = await testLibraries();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            const files = await testAPI();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            const filesOK = await testFiles(files);
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            const galaxyOK = testGalaxyClass();
+            
+            // Final summary
+            log('📊 Test Summary:');
+            log(`Libraries: ${librariesOK ? '✅ PASS' : '❌ FAIL'}`);
+            log(`API: ${files !== false ? '✅ PASS' : '❌ FAIL'}`);
+            log(`Files: ${filesOK ? '✅ PASS' : '⚠️ PARTIAL'}`);
+            log(`Galaxy: ${galaxyOK ? '✅ PASS' : '❌ FAIL'}`);
+            
+            if (librariesOK && files !== false && galaxyOK) {
+                log('🎉 SYSTEM READY! You can launch the galaxy visualization.', 'success');
+            } else {
+                log('⚠️ Some components need attention before launching.', 'warning');
+            }
+        }
+        
+        // Auto-run tests when page loads
+        window.addEventListener('load', function() {
+            setTimeout(runTests, 1000);
+        });
+    </script>
+    
+    <!-- Load libraries for testing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+    <script src="assets/js/galaxy-clean.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Upload</title>
+</head>
+<body>
+    <h1>Test File Upload</h1>
+    <form action="api/upload.php" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Upload</button>
+    </form>
+    
+    <script>
+        // Test with JavaScript too
+        async function testUpload() {
+            const input = document.querySelector('input[type="file"]');
+            if (input.files.length > 0) {
+                const formData = new FormData();
+                formData.append('file', input.files[0]);
+                
+                try {
+                    const response = await fetch('api/upload.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    console.log('Upload result:', result);
+                    alert(JSON.stringify(result, null, 2));
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    alert('Upload error: ' + error.message);
+                }
+            }
+        }
+        
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            testUpload();
+        });
+    </script>
+</body>
+</html>

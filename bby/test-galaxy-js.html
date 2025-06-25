@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Test - JavaScript Check</title>
+</head>
+<body>
+    <h1>Galaxy JavaScript Test</h1>
+    <div id="status">Loading...</div>
+    <div id="errors" style="color: red;"></div>
+    <div id="logs" style="margin-top: 20px; font-family: monospace; white-space: pre-wrap;"></div>
+
+    <script>
+        // Test if Three.js loads
+        window.addEventListener('load', function() {
+            const statusDiv = document.getElementById('status');
+            const errorsDiv = document.getElementById('errors');
+            const logsDiv = document.getElementById('logs');
+            
+            let logs = [];
+            function log(message) {
+                logs.push(new Date().toLocaleTimeString() + ': ' + message);
+                logsDiv.textContent = logs.join('\n');
+                console.log(message);
+            }
+            
+            // Check if Three.js is available
+            if (typeof THREE !== 'undefined') {
+                log('✓ Three.js loaded successfully');
+                statusDiv.innerHTML = '<span style="color: green;">✓ Three.js loaded</span>';
+            } else {
+                log('✗ Three.js failed to load');
+                errorsDiv.innerHTML += 'Three.js not found<br>';
+            }
+            
+            // Check if TWEEN is available
+            if (typeof TWEEN !== 'undefined') {
+                log('✓ TWEEN.js loaded successfully');
+            } else {
+                log('✗ TWEEN.js failed to load');
+                errorsDiv.innerHTML += 'TWEEN.js not found<br>';
+            }
+            
+            // Test API connection
+            log('Testing API connection...');
+            fetch('api/files.php')
+                .then(response => {
+                    log('API Response Status: ' + response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    log('✓ API connection successful');
+                    log('Files found: ' + (data.files ? data.files.length : 0));
+                    if (data.files && data.files.length > 0) {
+                        log('Sample file: ' + JSON.stringify(data.files[0], null, 2));
+                    }
+                })
+                .catch(error => {
+                    log('✗ API connection failed: ' + error.message);
+                    errorsDiv.innerHTML += 'API Error: ' + error.message + '<br>';
+                });
+        });
+        
+        // Capture console errors
+        window.addEventListener('error', function(e) {
+            const errorsDiv = document.getElementById('errors');
+            errorsDiv.innerHTML += 'JS Error: ' + e.message + ' at ' + e.filename + ':' + e.lineno + '<br>';
+        });
+    </script>
+    
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+</body>
+</html>

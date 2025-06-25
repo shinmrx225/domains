@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Diagnostic</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        #console { background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; margin: 20px 0; height: 400px; overflow-y: auto; font-family: monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>Galaxy Visualization Diagnostic</h1>
+    
+    <div id="libraryStatus"></div>
+    <div id="apiStatus"></div>
+    <div id="galaxyStatus"></div>
+    
+    <div id="console"></div>
+    
+    <button onclick="runDiagnostic()">Run Full Diagnostic</button>
+    <button onclick="clearConsole()">Clear Console</button>
+
+    <script>
+        let consoleDiv = document.getElementById('console');
+        
+        function logToConsole(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}\n`;
+            consoleDiv.textContent += logMessage;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearConsole() {
+            consoleDiv.textContent = '';
+        }
+        
+        function updateStatus(elementId, message, success) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = message;
+            element.className = 'status ' + (success ? 'success' : 'error');
+        }
+        
+        function checkLibraries() {
+            logToConsole('Checking required libraries...');
+            
+            let threeJS = typeof THREE !== 'undefined';
+            let tweenJS = typeof TWEEN !== 'undefined';
+            
+            if (threeJS) {
+                updateStatus('libraryStatus', '✓ Three.js loaded (version: ' + THREE.REVISION + ')', true);
+                logToConsole('✓ Three.js available, revision: ' + THREE.REVISION);
+            } else {
+                updateStatus('libraryStatus', '✗ Three.js not loaded', false);
+                logToConsole('✗ Three.js not available');
+            }
+            
+            if (tweenJS) {
+                logToConsole('✓ TWEEN.js available');
+            } else {
+                logToConsole('✗ TWEEN.js not available');
+            }
+            
+            return threeJS && tweenJS;
+        }
+        
+        async function checkAPI() {
+            logToConsole('Testing API connection...');
+            
+            try {
+                const response = await fetch('api/files.php');
+                logToConsole('API Response status: ' + response.status);
+                
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                
+                const data = await response.json();
+                logToConsole('API Response received: ' + JSON.stringify(data, null, 2));
+                
+                const fileCount = data.files ? data.files.length : 0;
+                updateStatus('apiStatus', '✓ API working - ' + fileCount + ' files found', true);
+                logToConsole('✓ API working, files found: ' + fileCount);
+                
+                return true;
+            } catch (error) {
+                updateStatus('apiStatus', '✗ API Error: ' + error.message, false);
+                logToConsole('✗ API Error: ' + error.message);
+                return false;
+            }
+        }
+        
+        function checkGalaxyClass() {
+            logToConsole('Checking Galaxy class...');
+            
+            if (typeof GalaxyVisualization !== 'undefined') {
+                updateStatus('galaxyStatus', '✓ GalaxyVisualization class available', true);
+                logToConsole('✓ GalaxyVisualization class is defined');
+                return true;
+            } else {
+                updateStatus('galaxyStatus', '✗ GalaxyVisualization class not found', false);
+                logToConsole('✗ GalaxyVisualization class not defined');
+                return false;
+            }
+        }
+        
+        async function runDiagnostic() {
+            clearConsole();
+            logToConsole('Starting full diagnostic...');
+            
+            const libraries = checkLibraries();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            const api = await checkAPI();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            const galaxy = checkGalaxyClass();
+            
+            logToConsole('Diagnostic complete!');
+            
+            if (libraries && api && galaxy) {
+                logToConsole('✓ All systems ready for galaxy visualization');
+            } else {
+                logToConsole('✗ Some systems need attention');
+            }
+        }
+        
+        // Capture JavaScript errors
+        window.addEventListener('error', function(e) {
+            logToConsole('JavaScript Error: ' + e.message + ' at ' + e.filename + ':' + e.lineno, 'error');
+        });
+        
+        // Run initial check when page loads
+        window.addEventListener('load', function() {
+            setTimeout(runDiagnostic, 1000);
+        });
+    </script>
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+    <!-- Galaxy Script -->
+    <script src="assets/js/galaxy-clean.js"></script>
+</body>
+</html>

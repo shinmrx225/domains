@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Screen Test</title>
+    <link rel="stylesheet" href="assets/css/galaxy.css">
+    <style>
+        #debug {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 20000;
+            font-family: monospace;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="heart-loader">
+                <div class="heart">
+                    <div class="heart-piece"></div>
+                    <div class="heart-piece"></div>
+                </div>
+            </div>
+            <h2></h2>
+            <p id="loadingText">Testing loading screen...</p>
+        </div>
+    </div>
+
+    <div id="debug">
+        <h4>Debug Info:</h4>
+        <div id="debugLog"></div>
+    </div>
+
+    <canvas id="galaxyCanvas" style="background: #000;"></canvas>
+
+    <script>
+        let debugLog = document.getElementById('debugLog');
+        
+        function log(message) {
+            const time = new Date().toLocaleTimeString();
+            debugLog.innerHTML += `[${time}] ${message}<br>`;
+            console.log(message);
+        }
+        
+        function testLoadingScreen() {
+            log('Starting loading screen test...');
+            
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingText = document.getElementById('loadingText');
+            
+            log('Loading screen element found: ' + (loadingScreen ? 'Yes' : 'No'));
+            log('Loading text element found: ' + (loadingText ? 'Yes' : 'No'));
+            
+            let step = 0;
+            const steps = [
+                'Initializing...',
+                'Loading libraries...',
+                'Connecting to API...',
+                'Creating galaxy...',
+                'Ready!'
+            ];
+            
+            function nextStep() {
+                if (step < steps.length) {
+                    loadingText.textContent = steps[step];
+                    log('Step ' + (step + 1) + ': ' + steps[step]);
+                    step++;
+                    setTimeout(nextStep, 1000);
+                } else {
+                    log('All steps complete, hiding loading screen...');
+                    hideLoadingScreen();
+                }
+            }
+            
+            function hideLoadingScreen() {
+                log('Adding hidden class to loading screen...');
+                loadingScreen.classList.add('hidden');
+                
+                setTimeout(() => {
+                    log('Setting display to none...');
+                    loadingScreen.style.display = 'none';
+                    log('Loading screen test complete!');
+                }, 1000);
+            }
+            
+            setTimeout(nextStep, 500);
+        }
+        
+        // Start test when page loads
+        window.addEventListener('load', function() {
+            log('Page loaded, starting test in 1 second...');
+            setTimeout(testLoadingScreen, 1000);
+        });
+    </script>
+</body>
+</html>

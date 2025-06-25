@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Test - Minimal</title>
+    <link rel="stylesheet" href="assets/css/galaxy.css">
+    <style>
+        body { 
+            margin: 0; 
+            background: #000; 
+            overflow: hidden; 
+            font-family: Arial, sans-serif;
+        }
+        #status {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 5px;
+            max-width: 300px;
+            z-index: 1000;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffaa00; }
+    </style>
+</head>
+<body>
+    <div id="status">
+        <div>Status: <span id="statusText">Initializing...</span></div>
+        <div>Files: <span id="filesCount">0</span></div>
+        <div>Errors: <span id="errorText">None</span></div>
+    </div>
+
+    <canvas id="galaxyCanvas"></canvas>
+
+    <script>
+        // Status tracking
+        function updateStatus(text, type = 'info') {
+            const statusText = document.getElementById('statusText');
+            statusText.textContent = text;
+            statusText.className = type;
+            console.log('[Status]', text);
+        }
+        
+        function setFilesCount(count) {
+            document.getElementById('filesCount').textContent = count;
+        }
+        
+        function setError(error) {
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = error;
+            errorText.className = 'error';
+            console.error('[Error]', error);
+        }
+        
+        // Error handling
+        window.addEventListener('error', function(e) {
+            setError(e.message + ' at line ' + e.lineno);
+        });
+        
+        // Test function
+        async function testGalaxy() {
+            updateStatus('Loading libraries...');
+            
+            // Wait for libraries to load
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            if (typeof THREE === 'undefined') {
+                setError('Three.js not loaded');
+                return;
+            }
+            
+            if (typeof TWEEN === 'undefined') {
+                setError('TWEEN.js not loaded');
+                return;
+            }
+            
+            updateStatus('Libraries loaded', 'success');
+            
+            // Test API
+            try {
+                updateStatus('Testing API...');
+                const response = await fetch('api/files.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    setFilesCount(data.files.length);
+                    updateStatus('API working', 'success');
+                } else {
+                    updateStatus('API returned error: ' + data.message, 'warning');
+                }
+            } catch (error) {
+                setError('API failed: ' + error.message);
+            }
+            
+            // Test Galaxy class
+            try {
+                updateStatus('Testing Galaxy class...');
+                
+                if (typeof GalaxyVisualization === 'undefined') {
+                    setError('GalaxyVisualization class not found');
+                    return;
+                }
+                
+                updateStatus('Galaxy class found', 'success');
+                
+                // Try to create galaxy
+                updateStatus('Creating galaxy...');
+                window.galaxyInstance = new GalaxyVisualization();
+                
+                updateStatus('Galaxy created successfully!', 'success');
+                
+            } catch (error) {
+                setError('Galaxy creation failed: ' + error.message);
+            }
+        }
+        
+        // Start test when everything is loaded
+        window.addEventListener('load', function() {
+            setTimeout(testGalaxy, 1000);
+        });
+    </script>
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+    <!-- Galaxy Script -->
+    <script src="assets/js/galaxy-clean.js"></script>
+</body>
+</html>
